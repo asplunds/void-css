@@ -1,0 +1,3 @@
+#test *:not(hey .test:not(.ok))[test][test]::before:not(:not(test))::after {
+    color: green;
+}

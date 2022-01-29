@@ -1,0 +1,35 @@
+:root {
+    --color: green;
+}
+
+body, :root {
+    --test: 123;
+}
+.parent {
+    color: red;
+}
+.parent #nested-id {
+    width: 100%;
+}
+.parent .child[test][attr*="hi there"] {
+    color: blue;
+}
+.parent .merge {
+    display: flex;
+}
+.parent .merge.merge-nested {
+    height: 100%;
+}
+.parent .merge {
+    justify-content: center;
+}
+.parent .merge.merge-nested {
+    pointer-events: none;
+}
+.parent .actually-merge {
+    --michael: scott;
+    --dwight: schrute;
+}
+.parent .pseudo-element::before {
+    content: "hello";
+}

@@ -1,0 +1,186 @@
+"use strict";
+
+if (typeof window === "undefined" || typeof document === "undefined") return;
+
+
+var head = document.head;
+
+var staticResolved = resolveId("static", id);
+var staticStyle = document.getElementById(staticResolved) || createStyle(staticResolved, id);
+
+staticStyle.innerHTML = compiled.static;
+
+// Remove old styles
+!(function () {
+    var styles = document.querySelectorAll("head > style[vcss][domain='" + id + "']");
+    styles.forEach(function (item) {
+        if (item !== staticStyle) {
+            item.remove();
+        }
+    });
+})();
+
+
+
+var counter = 0;
+var cache = {};
+var usedClasses = {};
+function ClassManager(classes) {
+    var keys = Object.keys(classes);
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var value = classes[key];
+        if (/--\d+/.test(value)) {
+            usedClasses[value] = true
+        }
+        void Object.defineProperty(this, key, {
+            writable: false,
+            value,
+        });
+    }
+
+    this._exportedClasses = classes;
+    this._getExportedClass = function (key) {
+        if (!this._exportedClasses.hasOwnProperty(key)) {
+            return null;
+        }
+        return this._exportedClasses[key] || "";
+    }
+}
+
+var handler = {
+    get: function (target, prop) {
+        var exportedClass = target._getExportedClass(prop);
+        if (exportedClass === null) {
+            var action = "log";
+            if (console.hasOwnProperty("warn")) {
+                action = "warn";
+            }
+            console[action]([
+                "[Void CSS] - Class '" + prop + "' is accessed but not exported from file '" + filePath + "' ",
+                "To export classes use the double dot (..) syntax prepended to the class name. ",
+                "This is not a fatal error, only a warning."
+            ].join("\n"));
+            return "";
+        } else {
+            return exportedClass;
+        }
+    }
+}
+
+function removeUnusedDynamics() {
+    var keys = Object.keys(usedClasses);
+    for (var i = 0; i < keys.length; i++) {
+        var name = keys[i];
+        var search = document.getElementsByClassName(name);
+        console.log(search, name, usedClasses);
+        if (!search.length && name && counter > 1) {
+            var style = document.querySelector("head > style[vcss][domain='" + id + "'][implements='" + name + "']");
+            if (style) {
+                style.remove();
+                delete usedClasses[keys[i]];
+            }
+        }
+    }
+}
+
+function updateDynamicStyles(variableObject) {
+    if (!compiled.dynamic.length) {
+        if (!window.hasOwnProperty("Proxy")) return compiled.classes;
+        return new window.Proxy(new ClassManager(compiled.classes), handler);
+    }
+    
+    var keys = [];
+    if (variableObject && variableObject.toString() === "[object Object]") {
+        keys = Object.keys(variableObject);
+    }
+    var changedAtAll = false;
+    var changed = {};
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (JSON.stringify(variableObject[key]) !== JSON.stringify(cache[key])) {
+            changed[key] = true;
+        }
+    }
+
+    for (var i = 0; i < compiled.dynamic.length; i++) {
+        var dynamic = compiled.dynamic[i];
+        for (var j = 0; j < dynamic.dependencies.length; j++) {
+            var dependency = dynamic.dependencies[j].substr(1);
+            if (changed.hasOwnProperty(dependency)) {
+                if (!changedAtAll) {
+                    removeUnusedDynamics();
+                    changedAtAll = true;
+                }
+                updateDynamic(dynamic, variableObject, compiled.classes);
+            }
+        }
+    }
+    
+
+    if (!window.hasOwnProperty("Proxy")) return compiled.classes;
+
+    return new window.Proxy(new ClassManager(compiled.classes), handler);
+}
+
+function resolveId(name, id) {
+    return name + "-" + id;
+}
+
+function updateDynamic(dynamic, variableObject, classes) {
+    var snowflake = ++counter || Date.now();
+    var resolvedID = resolveId("dynamic-" + snowflake, id);
+
+    var style = /* document.getElementById(resolvedID) ||  */createStyle(resolvedID, id, dynamic.dependencies);
+    var regex = [];
+    var keys = Object.keys(classes || {}) || []
+    for (var i = 0; i < keys.length; i++) {
+        regex.push("." + classes[keys[i]].replace(/^\.|--\d+$/, "") + "(?:--\\d+)?");
+    }
+    var newClasses = classes;
+    style.innerHTML = dynamic.css.replace(/\$([a-zA-Z0-9-_]+)/g, function (_, group) {
+        var value = variableObject[group];
+
+        // minor performance gain
+        if (!value) {
+            if (value === null || value === undefined || value === NaN || value === Infinity || value === -Infinity) {
+                value = "revert";
+            }
+        }
+
+        return value;
+    }).replace(new RegExp(regex.join("|"), "g"), function (match) {
+        var replaced = match.replace(/^\.|--\d+$/, "");
+        var className = Object.values(classes).find((v, i) => {
+            var val = v.replace(/^\.|--\d+$/, "")
+            if (val === replaced) {
+                var implementation = val + "--" + snowflake;
+                newClasses[keys[i]] = implementation;
+                style.setAttribute("implements", implementation)
+                return true;
+            }
+            return false;
+        });
+
+        if (!className) {
+            return match;
+        }
+        return "." + className.replace(/^\.|--\d+$/, "") + "--" + snowflake;
+    });
+    console.log(classes, newClasses);
+}
+
+function createStyle(id, rawID, dependencies) {
+    var style = document.createElement("style");
+    style.setAttribute("type", "text/css");
+    style.setAttribute("vcss", "");
+    if (dependencies && dependencies.length) {
+        style.setAttribute("depends-on", (dependencies || []).join(", "));
+    }
+    style.id = id;
+    style.setAttribute("domain", rawID);
+    head.appendChild(style);
+    return document.getElementById(id);
+}
+
+return updateDynamicStyles;

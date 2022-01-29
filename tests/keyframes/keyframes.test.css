@@ -1,0 +1,23 @@
+body .test {
+    color: hey;
+}
+body .test {
+    color: blue;
+}
+@keyframes test {
+    to {
+        color: blue;
+    }
+    from {
+        color: blue;
+    }
+}
+@keyframes test2 {
+    0%, 50% {
+        color: red;
+        background: var(--accent);
+    }
+    100% {
+        color: blue;
+    }
+}

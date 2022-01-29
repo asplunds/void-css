@@ -1,0 +1,11 @@
+.root {
+    color: red;
+    &:hover {
+        color: blue;
+    }
+    &:focus, &:active {
+        &::before {
+            color: green;
+        }
+    }
+}

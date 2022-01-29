@@ -1,0 +1,4 @@
+assets/*
+.vscode/*
+jest.config.js
+todo.md

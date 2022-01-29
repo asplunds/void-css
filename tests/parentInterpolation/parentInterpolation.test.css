@@ -1,0 +1,9 @@
+.root {
+    color: red;
+}
+.root:hover {
+    color: blue;
+}
+.root:focus::before, .root:active::before {
+    color: green;
+}

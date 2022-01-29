@@ -1,0 +1,6 @@
+.class-name {
+    color: --accent;
+    color: --test?red;
+    color: --test?--test;
+    color: --test?--test?blue;
+}
