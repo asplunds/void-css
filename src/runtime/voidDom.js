@@ -6,6 +6,7 @@ const initialState = {
     usedClasses: [],
     usedStyleElements: [],
     initiated: false,
+    classCache: {},
 }
 var state = JSON.parse(JSON.stringify(initialState));
 
@@ -115,6 +116,12 @@ function voidCSSAssembler(input) {
         init();
     }
 
+    const cache = state.classCache[JSON.stringify(input)];
+    if (cache) {
+        void log("Using cache", input);
+        return new window.Proxy(new ClassManager(cache), handler);
+    }
+
     if (input !== undefined && input.toString() !== "[object Object]") {
         const error = new TypeError(`Invalid Void CSS style input given, expected "undefined" or "Object" instead received "${input}".`);
         (console.error || console.log)(error);
@@ -151,6 +158,8 @@ function voidCSSAssembler(input) {
     }
 
     state.previousInput = input;
+
+    state.classCache[JSON.stringify(input)] = classNames;
 
     return new window.Proxy(new ClassManager(classNames), handler);
 }
