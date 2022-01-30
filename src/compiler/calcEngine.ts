@@ -32,7 +32,6 @@
          if (funcArgument && !["calc", "var"].includes(name)) {
              const resolvedArgument = reduce(operands(funcArgument)).join("");
              if (!name) return resolvedArgument;
-             console.log("yes")
              return `${name}(${resolvedArgument})`;
          }
          return term;
