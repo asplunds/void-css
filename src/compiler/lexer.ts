@@ -732,7 +732,7 @@ function lex(ctx: Context, token: Match | undefined, attributes?: {
             return lex(
                 ctx,
                 // add non ending condition?
-                expect(slice, renameToken(whiteSpace, "styleScopeEnd"), ..._if(depth > 0, [styleScopeEnd]), currentSelector, propertyName, attributeSelectorClose, selectorName, idInitiator, classNameInitiator, atSymbol, whiteSpaceOrNothing),
+                expect(slice, renameToken(whiteSpace, "styleScopeEnd"), ..._if(depth > 0, [styleScopeEnd, selectorCombinator, currentSelector, notOperator, colon]), propertyName, attributeSelectorClose, selectorName, idInitiator, classNameInitiator, atSymbol, whiteSpaceOrNothing),
                 {
                     onError: createErrorContext(
                         "Unexpected token. Undefined behavior." + (depth),

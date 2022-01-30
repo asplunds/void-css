@@ -1,6 +1,6 @@
 {
   "name": "void-css",
-  "version": "1.0.32",
+  "version": "1.0.34",
   "description": "A JIT & statically compiled CSS processor",
   "main": "index.js",
   "scripts": {
