@@ -171,6 +171,7 @@ function cleanUnusedClasses() {
             const search = document.querySelector(selector);
             if (!search) {
                 style.remove();
+                state.classCache = {};
             }
         } catch (e) { console.error(e) }
     }
