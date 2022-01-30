@@ -433,10 +433,11 @@ function lex(ctx: Context, token: Match | undefined, attributes?: {
                     notOperatorDepth,
                 },
             );
+        case "currentSelectorWhiteSpace":
         case "currentSelector":
             return lex(
                 ctx,
-                expect(slice, ...globals, notOperator, selectorChild, classNameInitiator, colon, selectorName, selectorCombinator, selectorSeparator, styleScope),
+                expect(slice, ...globals, ...renameTokens([whiteSpace], "currentSelectorWhiteSpace", "selector"), notOperator, selectorChild, classNameInitiator, colon, selectorName, selectorCombinator, selectorSeparator, styleScope, wildcard),
                 {
                     onError: createErrorContext(
                         "Unexpected token. Expected: ' ', '>', '+', '||', '.', ':', '::', '[...]', ',' or '{' directly proceeding current selector ('&').",
@@ -607,7 +608,7 @@ function lex(ctx: Context, token: Match | undefined, attributes?: {
 
             return lex(
                 ctx,
-                expect(slice, ...globals, renameToken(whiteSpace, "combinator"), notOperator, selectorName, idInitiator, attributeSelectorInitiator, classNameInitiator, wildcard),
+                expect(slice, ...globals, ...renameTokens([whiteSpace], "combinator", "selector"), notOperator, selectorName, idInitiator, attributeSelectorInitiator, classNameInitiator, wildcard),
                 {
                     onError: createErrorContext(
                         `Unexpected token proceeding selector combinator. Expected: [combinator operand]. ${combinatorHint}Did you forgot a [combinator operand] after the selector combinator?`,
@@ -715,7 +716,7 @@ function lex(ctx: Context, token: Match | undefined, attributes?: {
             }
             return lex(
                 ctx,
-                expect(slice, ...globals, renameToken(whiteSpace, "styleScopeWhiteSpace"), atSymbol, styleScopeEnd, propertyName, selectorName, attributeSelectorClose, wildcard, idInitiator, classNameInitiator, currentSelector),
+                expect(slice, ...globals, renameToken(whiteSpace, "styleScopeWhiteSpace"), selectorCombinator, atSymbol, styleScopeEnd, propertyName, selectorName, attributeSelectorClose, wildcard, idInitiator, classNameInitiator, currentSelector),
                 {
                     onError: createErrorContext(
                         "Unexpected token in style scope. Expected: '}', [css selector] or [css property].",
