@@ -8,5 +8,16 @@ function VoidCSS(config?: VoidCSSConfiguration) {
     return (css: string) => compileScope(css, configInstance, [autoVar(), autoCalc()]);
 }
 
+const compile = VoidCSS();
+
+const css = `
+body {
+    :not(:last-child) {
+        color: green
+    }
+}
+`
+
+console.log(compile(css)?.static);
 
 export default VoidCSS;

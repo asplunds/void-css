@@ -121,7 +121,7 @@ function lex(ctx: Context, token: Match | undefined, attributes?: {
         case "notOperatorParenthesis":
             return lex(
                 ctx,
-                expect(slice, ...globals, ..._if(enclosures.length === 0, [rootSelector]), ..._if(depth > 0, [currentSelector]), notOperator, attributeSelectorInitiator, classNameInitiator, selectorName, idInitiator, wildcard),
+                expect(slice, ...globals, ..._if(enclosures.length === 0, [rootSelector]), ..._if(depth > 0, [currentSelector]), notOperator, colon, attributeSelectorInitiator, classNameInitiator, selectorName, idInitiator, wildcard),
                 {
                     onError: createErrorContext(
                         "Unexpected token. Expected: [selector].",
@@ -716,7 +716,7 @@ function lex(ctx: Context, token: Match | undefined, attributes?: {
             }
             return lex(
                 ctx,
-                expect(slice, ...globals, renameToken(whiteSpace, "styleScopeWhiteSpace"), selectorCombinator, atSymbol, styleScopeEnd, propertyName, selectorName, attributeSelectorClose, wildcard, idInitiator, classNameInitiator, currentSelector),
+                expect(slice, ...globals, renameToken(whiteSpace, "styleScopeWhiteSpace"), notOperator, selectorCombinator, atSymbol, styleScopeEnd, propertyName, selectorName, attributeSelectorClose, wildcard, idInitiator, classNameInitiator, currentSelector),
                 {
                     onError: createErrorContext(
                         "Unexpected token in style scope. Expected: '}', [css selector] or [css property].",
