@@ -7,6 +7,9 @@ const tests = [
     ["1 \\/ 2", "1 / 2"],
     ["1 | 2", "1 / 2"],
     ["red", "red"],
+    ["-24px * --scaleFactor", "calc(-24px * --scaleFactor)"],
+    ["-24px * -30px", "calc(-24px * -30px)"],
+    ["--scaleFactor * -24px", "calc(--scaleFactor * -24px)"],
     ["transition 30ms background ease-in-out", "transition 30ms background ease-in-out"],
     ["10px + 20vh", "calc(10px + 20vh)"],
     ["3 * (2 - 10px)", "calc(3 * (2 - 10px))"],
@@ -19,7 +22,7 @@ const tests = [
 test("calc engine", () => {
 
     for (const [input, output] of tests) {
-        expect(output).toBe(calcify(input));
+        expect(calcify(input)).toBe(output);
     }
 
     // test cache
