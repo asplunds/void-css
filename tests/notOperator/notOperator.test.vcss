@@ -1,3 +1,6 @@
-#test *:not(hey .test:not(.ok))[test][test]::before:not(:not(test))::after {
+#test *:not(hey .test:not(.ok)):not(.yes)[test][test]::before:not(:not(test))::after {
     color: green;
+    &[test]:not(.test) {
+        background: blue;
+    }
 }

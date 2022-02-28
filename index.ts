@@ -5,27 +5,25 @@ import { autoCalc, autoVar } from "./src/extensions/defaultExtensions";
 function VoidCSS(config?: VoidCSSConfiguration) {
     const configInstance = new Config(config ?? {});
 
-    return (css: string) => compileScope(css, configInstance, [autoVar(), autoCalc()]);
+    return (css: string) =>
+        compileScope(css, configInstance, [autoVar(), autoCalc()]);
 }
 
 /* const compile = VoidCSS();
 
 const css = `
-body {
-    test {
-        color: red;
-    }
 
-    :not(:last-child) {
-        color: green
-    }
-    * {
-
+@media screen and (max-width: 992px) {
+    @media screen and (max-width: 992px) {
+        .test {
+            background: green
+        }
     }
 }
 
 
-`
+
+`;
 
 console.log(compile(css)?.static); */
 

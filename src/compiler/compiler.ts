@@ -21,7 +21,7 @@ const newLine = `\n`;
 export default function compile(ctx: Context) {
 
     const abstractSyntaxTree = createTree(ctx, ctx.strippedTokens);
-    //console.log(ctx.strippedTokens);
+    //console.log(ctx.tokens);
     //console.log(JSON.stringify(abstractSyntaxTree, null, 2))
 
     return createCss(abstractSyntaxTree, ctx);
