@@ -4,7 +4,7 @@
   "description": "A JIT & statically compiled CSS processor",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch ./**/*.ts --exec npx ts-node ./src/newCompiler/lexer/entrypoint.ts",
+    "dev": "nodemon --legacyWatch --watch ./**/*.ts --exec \"npx ts-node ./src/newCompiler/lexer/entrypoint.ts\"",
     "test": "jest --watchAll",
     "tsc": "tsc",
     "clean": "tsc --build --clean",
